@@ -1,0 +1,10 @@
+Dataset: CICIoT2023
+Task: 8-class grouped multiclass intrusion detection
+Training file: 1,073,851 rows, 42 columns
+Test file: 268,463 rows, 42 columns
+Input features: 39 numerical flow features
+Labels removed from X: attack_class, Label, label
+Training duplicates removed: 84,370
+Balanced training pool: 80,000 rows (10,000 per class)
+Train/validation: 64,000 / 16,000
+Test set: original imbalanced distribution
