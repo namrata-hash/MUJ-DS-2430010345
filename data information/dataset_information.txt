@@ -1,0 +1,216 @@
+DATASET INFORMATION
+====================
+
+Project: Comparative Analysis of Deep Learning Models for IoT Intrusion Detection Using CICIoT2023
+Student: Namrata Kothari
+Registration Number: 2430010345
+Section: D
+Institute: Manipal University Jaipur
+Subject: Deep Learning
+
+
+1. DATASET NAME
+----------------
+CICIoT2023
+
+The project uses the 8-class grouped version of the CICIoT2023 dataset for multiclass IoT intrusion detection.
+
+
+2. DATASET SOURCE
+------------------
+Processed dataset source used in the experiment:
+Hugging Face — siyam21/CIC-IoT-2023
+https://huggingface.co/datasets/siyam21/CIC-IoT-2023
+
+Original dataset source:
+Canadian Institute for Cybersecurity (CIC)
+https://www.unb.ca/cic/datasets/iotdataset-2023.html
+
+Exact Parquet files used:
+- train-00000-of-00001.parquet
+- test-00000-of-00001.parquet
+
+The experiment uses Parquet files and loads them using pandas.read_parquet().
+
+
+3. DATASET SIZE
+----------------
+Training records loaded: 1,073,851
+Test records loaded: 268,463
+Total columns: 42
+Numerical network-flow features: 39
+Label-related columns: 3
+
+The 42 columns consist of:
+- 39 numerical network-flow features
+- attack_class
+- Label
+- label
+
+
+4. CLASSIFICATION TASK
+-----------------------
+Task:
+8-class grouped multiclass IoT intrusion detection
+
+The eight grouped classes are:
+
+1. Benign
+2. BruteForce
+3. DDoS
+4. DoS
+5. Mirai
+6. Recon
+7. Spoofing
+8. Web-based
+
+
+5. ORIGINAL TRAINING CLASS DISTRIBUTION
+-----------------------------------------
+Class          Samples       Approx. %
+-----------------------------------------
+DDoS           361,842       33.70%
+Recon          161,877       15.07%
+Benign         159,990       14.90%
+DoS            159,925       14.89%
+Mirai          119,897       11.17%
+Spoofing        80,043        7.45%
+Web-based       19,820        1.85%
+BruteForce      10,457        0.97%
+
+The original training distribution is strongly imbalanced. DDoS is the
+largest class, while BruteForce and Web-based are minority classes.
+
+
+6. DATA QUALITY
+----------------
+Missing values:
+No missing values were found in the loaded training data.
+
+Duplicate rows:
+84,370 exact duplicate rows were identified in the original training split.
+
+After duplicate removal:
+989,481 unique training records remained.
+
+
+7. TRAINING DATA BALANCING
+---------------------------
+To reduce the effect of severe class imbalance during model training,
+a controlled balanced training pool was created.
+
+Sampling strategy:
+- Maximum 10,000 samples per class
+- Random state: 42
+- Total balanced pool: 80,000 samples
+- 10,000 samples for each of the 8 classes
+
+The held-out test set was NOT artificially balanced. It was retained in
+its original distribution so that model performance could be evaluated
+under a realistic class distribution.
+
+
+8. TRAIN / VALIDATION / TEST SPLIT
+-----------------------------------
+Balanced training pool: 80,000 samples
+
+Training set:
+64,000 samples (80%)
+
+Validation set:
+16,000 samples (20%)
+
+Test set:
+268,463 samples
+Original held-out test distribution
+
+The training-validation split is stratified to preserve the class
+distribution.
+
+
+9. INPUT FEATURES
+------------------
+Final model input dimensionality:
+39 numerical network-flow features
+
+The following target-related columns are removed from the model input:
+- attack_class
+- Label
+- label
+
+This prevents target leakage because the dataset contains multiple
+representations of the target.
+
+
+10. PREPROCESSING PIPELINE
+---------------------------
+The preprocessing procedure is:
+
+1. Load the CICIoT2023 Parquet training and test files.
+2. Inspect the data and class distribution.
+3. Remove exact duplicate rows from the training data.
+4. Create a balanced training pool using up to 10,000 samples per class.
+5. Remove attack_class, Label and label from the feature matrix.
+6. Retain the 39 numerical network-flow features.
+7. Encode the eight grouped attack classes.
+8. Perform a stratified 80/20 training-validation split.
+9. Fit StandardScaler only on the training data.
+10. Apply the same fitted scaler to validation and test data.
+
+
+11. RANDOM STATE
+-----------------
+Random state used for controlled sampling and splitting:
+42
+
+
+12. FINAL DATASET SUMMARY
+--------------------------
+Dataset: CICIoT2023
+Task: 8-class multiclass intrusion detection
+Training records loaded: 1,073,851
+Test records loaded: 268,463
+Columns: 42
+Input features: 39
+Classes: 8
+Duplicates removed: 84,370
+Training records after duplicate removal: 989,481
+Balanced training pool: 80,000
+Training split: 64,000
+Validation split: 16,000
+Held-out test set: 268,463
+Scaling: StandardScaler
+Random state: 42
+
+
+13. MODELS EVALUATED USING THIS DATA
+--------------------------------------
+The same dataset preparation and evaluation protocol is used for seven
+deep learning architectures:
+
+1. DNN Baseline
+2. DNN + Dropout
+3. DNN + L2 Regularization
+4. Proposed DNN
+5. 1D CNN
+6. LSTM
+7. Transformer Encoder
+
+The Transformer was added in the later experimental stage while retaining
+the same dataset preprocessing and train-validation-test protocol.
+
+
+14. IMPORTANT INTERPRETATION NOTE
+----------------------------------
+The training data is balanced only for model fitting. The original
+imbalanced test set is retained for final evaluation.
+
+Therefore, macro-averaged metrics such as Macro Precision, Macro Recall,
+Macro F1 and Macro Specificity are important because they provide
+class-aware evaluation and reduce the risk of judging performance only
+from the dominant DDoS class.
+
+Published CICIoT2023 results should also be compared carefully because
+different studies may use different class definitions, sampling
+strategies, train-test splits, preprocessing methods and evaluation
+protocols.
