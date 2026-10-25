@@ -1,0 +1,117 @@
+FIGURE TEXT — CURRENT DEEP LEARNING PROJECT
+================================================
+
+Source:
+DeepLearning_notebook(2).ipynb
+
+Purpose:
+This file contains the report-ready figure titles, captions, and brief descriptions
+for the figures extracted from the current notebook. These figures correspond to
+the current GRU + improved Transformer experiment.
+
+IMPORTANT:
+- This is the current notebook only.
+- The previous 1D-CNN experiment is not included.
+- The figure numbering below is intended for use in the project report/PPT.
+
+
+FIGURE LIST
+-----------
+
+Figure 1
+Class Distribution in CICIoT2023 Training Dataset
+Caption: Distribution of the eight target classes in the CICIoT2023 training data used in the current experiment.
+
+Figure 2
+DNN Training vs Validation Accuracy
+Caption: Training and validation accuracy across epochs for the DNN model.
+
+Figure 3
+DNN Training vs Validation Loss
+Caption: Training and validation loss across epochs for the DNN model.
+
+Figure 4
+Transformer Training vs Validation Accuracy
+Caption: Training and validation accuracy across epochs for the improved Transformer model.
+
+Figure 5
+Transformer Training vs Validation Loss
+Caption: Training and validation loss across epochs for the improved Transformer model.
+
+Figure 6
+Confusion Matrix — DNN
+Caption: Confusion matrix showing class-wise predictions of the DNN model on the test set.
+
+Figure 7
+Confusion Matrix — DNN + Dropout
+Caption: Confusion matrix showing class-wise predictions of the DNN + Dropout model on the test set.
+
+Figure 8
+Confusion Matrix — DNN + L2
+Caption: Confusion matrix showing class-wise predictions of the DNN + L2 model on the test set.
+
+Figure 9
+Confusion Matrix — Proposed DNN
+Caption: Confusion matrix showing class-wise predictions of the Proposed DNN model on the test set.
+
+Figure 10
+Confusion Matrix — GRU
+Caption: Confusion matrix showing class-wise predictions of the GRU model on the test set.
+
+Figure 11
+Confusion Matrix — LSTM
+Caption: Confusion matrix showing class-wise predictions of the LSTM model on the test set.
+
+Figure 12
+Confusion Matrix — Transformer
+Caption: Confusion matrix showing class-wise predictions of the improved Transformer model on the test set.
+
+Figure 13
+Accuracy Comparison of Deep Learning Models
+Caption: Comparison of test accuracy across all seven evaluated deep learning architectures.
+
+Figure 14
+Macro F1 Score Comparison
+Caption: Comparison of macro F1 scores across all seven evaluated deep learning architectures.
+
+Figure 15
+Training Time Comparison
+Caption: Comparison of recorded model training time across all seven evaluated architectures.
+
+RECOMMENDED REPORT CAPTIONS
+----------------------------
+
+Figure 1. Class Distribution in CICIoT2023 Training Dataset.
+Figure 2. DNN Training and Validation Accuracy across Training Epochs.
+Figure 3. DNN Training and Validation Loss across Training Epochs.
+Figure 4. Improved Transformer Training and Validation Accuracy across Training Epochs.
+Figure 5. Improved Transformer Training and Validation Loss across Training Epochs.
+Figure 6. Confusion Matrix of the DNN Model on the Test Dataset.
+Figure 7. Confusion Matrix of the DNN + Dropout Model on the Test Dataset.
+Figure 8. Confusion Matrix of the DNN + L2 Model on the Test Dataset.
+Figure 9. Confusion Matrix of the Proposed DNN Model on the Test Dataset.
+Figure 10. Confusion Matrix of the GRU Model on the Test Dataset.
+Figure 11. Confusion Matrix of the LSTM Model on the Test Dataset.
+Figure 12. Confusion Matrix of the Improved Transformer Model on the Test Dataset.
+Figure 13. Accuracy Comparison of the Evaluated Deep Learning Models.
+Figure 14. Macro F1 Score Comparison of the Evaluated Deep Learning Models.
+Figure 15. Training Time Comparison of the Evaluated Deep Learning Models.
+
+
+MODEL ORDER USED IN THE COMPARISON
+-----------------------------------
+
+1. DNN
+2. DNN + Dropout
+3. DNN + L2
+4. Proposed DNN
+5. GRU
+6. LSTM
+7. Transformer
+
+
+NOTE
+----
+The captions above are intentionally concise so they can be pasted directly below
+figures in the project report. The descriptions explain what each figure represents
+without adding unsupported interpretation beyond the notebook's figure content.
