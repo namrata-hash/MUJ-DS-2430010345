@@ -1,0 +1,8 @@
+Index,Model,Accuracy,Macro Precision,Macro Recall,Macro F1,Training Time (sec),Accuracy Rank,Macro F1 Rank,Training Time Rank,Overall Note
+0,DNN,0.7544,0.6403,0.7031,0.6346,19.48,1,1,2,Best overall
+1,DNN + Dropout,0.7373,0.6391,0.6902,0.621,21.84,4,5,3,Competitive
+2,DNN + L2,0.7508,0.6343,0.6896,0.6305,18.46,2,2,1,Best training efficiency
+3,Proposed DNN,0.7407,0.6451,0.6898,0.6226,25.7,3,4,4,Competitive
+4,GRU,0.6982,0.6034,0.6551,0.5868,668.69,6,6,6,Best recurrent model
+5,LSTM,0.5524,0.522,0.5143,0.4571,173.61,7,7,5,Lowest overall performance
+6,Transformer,0.7253,0.6539,0.7105,0.6263,3497.91,5,3,7,Best macro precision and recall

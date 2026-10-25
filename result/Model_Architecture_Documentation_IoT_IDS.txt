@@ -1,0 +1,440 @@
+MODEL ARCHITECTURE DOCUMENTATION — CURRENT EXPERIMENT
+
+Project: Deep Learning Based Intrusion Detection for IoT Networks Using
+CICIoT2023 Student: Namrata Kothari Registration Number: 2430010345
+Section: D Institute: Manipal University Jaipur
+
+IMPORTANT
+
+This document describes the CURRENT notebook experiment only.
+
+The current seven-model comparison is: 1. DNN 2. DNN + Dropout 3. DNN +
+L2 Regularization 4. Proposed DNN 5. GRU 6. LSTM 7. Transformer
+
+The previous 1D CNN model is NOT part of the current experiment.
+
+The architecture descriptions below are taken from the current working
+notebook: DeepLearning_notebook(1).ipynb.
+
+1. EXPERIMENT-WIDE ARCHITECTURE SETUP
+
+Input: - 39 standardized numerical network-flow features.
+
+Output: - 8-class classification using a Softmax output layer.
+
+Number of classes: - 8
+
+Classes: - Benign - BruteForce - DDoS - DoS - Mirai - Recon - Spoofing -
+Web-based
+
+Input preprocessing: - StandardScaler is used. - The scaled feature
+matrix is used as the input to all architectures. - Feed-forward models
+use shape: (39,). - GRU and LSTM reshape the features to: (39, 1). -
+Transformer also receives the features as: (39, 1), treating each
+numerical feature as a token.
+
+General optimizer/loss for the DNN, Dropout, L2, Proposed DNN, GRU and
+LSTM: - Optimizer: Adam - Loss: Sparse Categorical Crossentropy - Batch
+size: 256 - Maximum epochs: 20 for the main models.
+
+The Proposed DNN uses EarlyStopping and ReduceLROnPlateau.
+
+The GRU and LSTM use: - EarlyStopping - ReduceLROnPlateau
+
+The Transformer uses: - AdamW - Learning rate: 1e-4 - Weight decay:
+1e-4 - Maximum epochs: 25 - EarlyStopping - ReduceLROnPlateau - Batch
+size: 256
+
+2. DNN BASELINE
+
+Purpose: Baseline fully connected neural network for the 39 numerical
+network-flow features.
+
+Architecture:
+
+Input (39) | Dense(128, ReLU) | Dense(64, ReLU) | Dense(32, ReLU) |
+Dense(8, Softmax) | 8-class output
+
+Exact notebook definition:
+
+Sequential([ Dense(128, activation=“relu”, input_shape=(num_features,)),
+Dense(64, activation=“relu”), Dense(32, activation=“relu”),
+Dense(num_classes, activation=“softmax”)])
+
+Training: - Adam optimizer - Sparse categorical crossentropy - Batch
+size = 256 - Epochs = 20 - No dropout - No L2 regularization - No early
+stopping in the baseline training cell
+
+Role: The DNN is the primary feed-forward baseline against which the
+regularized, recurrent, and attention-based models are compared.
+
+3. DNN + DROPOUT
+
+Purpose: Ablation model used to evaluate the effect of Dropout
+regularization.
+
+Architecture:
+
+Input (39) | Dense(128, ReLU) | Dropout(0.30) | Dense(64, ReLU) |
+Dropout(0.30) | Dense(32, ReLU) | Dense(8, Softmax) | 8-class output
+
+Exact regularization: - Dropout rate = 0.30 - Dropout is applied after
+the first two hidden dense layers.
+
+Training: - Adam optimizer - Sparse categorical crossentropy - Batch
+size = 256 - Epochs = 20 - No EarlyStopping or ReduceLROnPlateau in the
+training cell
+
+4. DNN + L2 REGULARIZATION
+
+Purpose: Ablation model used to evaluate explicit L2 weight
+regularization.
+
+Architecture:
+
+Input (39) | Dense(128, ReLU, L2=0.001) | Dense(64, ReLU, L2=0.001) |
+Dense(32, ReLU) | Dense(8, Softmax) | 8-class output
+
+Exact L2 configuration: - L2 coefficient = 0.001 - L2 is applied to the
+first two Dense layers.
+
+Training: - Adam optimizer - Sparse categorical crossentropy - Batch
+size = 256 - Epochs = 20
+
+5. PROPOSED DNN
+
+Purpose: Combined regularization architecture.
+
+The Proposed DNN combines: - L2 regularization - Batch Normalization -
+Dropout - EarlyStopping - ReduceLROnPlateau
+
+Architecture:
+
+Input (39) | Dense(128, ReLU, L2=0.001) | Batch Normalization |
+Dropout(0.30) | Dense(64, ReLU, L2=0.001) | Dropout(0.30) | Dense(32,
+ReLU) | Dropout(0.20) | Dense(8, Softmax) | 8-class output
+
+Exact architecture:
+
+Sequential([ Dense( 128, activation=“relu”,
+kernel_regularizer=l2(0.001), input_shape=(num_features,) ),
+BatchNormalization(), Dropout(0.30), Dense( 64, activation=“relu”,
+kernel_regularizer=l2(0.001) ), Dropout(0.30), Dense(32,
+activation=“relu”), Dropout(0.20), Dense(num_classes,
+activation=“softmax”)])
+
+Training: - Adam optimizer - Sparse categorical crossentropy - Batch
+size = 256 - Maximum epochs = 20
+
+EarlyStopping: - Monitor: val_loss - Patience: 4 - restore_best_weights
+= True
+
+ReduceLROnPlateau: - Monitor: val_loss - Factor = 0.5 - Patience = 2 -
+Minimum learning rate = 1e-6
+
+Role: This is the combined regularization/proposed feed-forward
+architecture.
+
+6. GRU
+
+Purpose: The GRU replaces the previous 1D CNN in the current experiment.
+
+The GRU is used as a recurrent architecture for modelling relationships
+between the standardized traffic features when the feature vector is
+treated as an ordered sequence.
+
+IMPORTANT INPUT REPRESENTATION: The 39 numerical features are reshaped
+from:
+
+(39,)
+
+to:
+
+(39, 1)
+
+Therefore: - 39 features are treated as 39 timesteps. - Each timestep
+contains 1 value.
+
+Input preparation:
+
+X_train_scaled.reshape(number_of_samples, 39, 1)
+
+Architecture:
+
+Input (39 timesteps, 1 feature) | GRU(64, return_sequences=True) |
+Dropout(0.20) | GRU(32) | Dense(64, ReLU) | Dropout(0.20) | Dense(8,
+Softmax) | 8-class output
+
+Exact notebook definition:
+
+Sequential([ GRU(64, return_sequences=True, input_shape=(num_features,
+1)), Dropout(0.20), GRU(32), Dense(64, activation=“relu”),
+Dropout(0.20), Dense(num_classes, activation=“softmax”)])
+
+Training: - Adam optimizer - Sparse categorical crossentropy - Batch
+size = 256 - Maximum epochs = 20 - EarlyStopping - ReduceLROnPlateau
+
+GRU callbacks: EarlyStopping: - monitor = val_loss - patience = 5 -
+restore_best_weights = True
+
+ReduceLROnPlateau: - monitor = val_loss - factor = 0.5 - patience = 2 -
+min_lr = 1e-6
+
+Role: The GRU is the recurrent comparison model in the current
+seven-model experiment and is directly compared with the LSTM and
+feed-forward models.
+
+7. LSTM
+
+Purpose: The LSTM provides a second recurrent architecture for
+comparison with GRU.
+
+Input representation: The 39 standardized features are reshaped to:
+
+(39, 1)
+
+Therefore: - 39 features are treated as sequential timesteps. - Each
+timestep has one input value.
+
+Architecture:
+
+Input (39 timesteps, 1 feature) | LSTM(64, return_sequences=True) |
+Dropout(0.30) | LSTM(32) | Dropout(0.30) | Dense(64, ReLU) | Dense(8,
+Softmax) | 8-class output
+
+Exact notebook definition:
+
+Sequential([ LSTM( 64, return_sequences=True,
+input_shape=(num_features, 1) ), Dropout(0.30), LSTM(32), Dropout(0.30),
+Dense(64, activation=“relu”), Dense(num_classes, activation=“softmax”)])
+
+Training: - Adam optimizer - Sparse categorical crossentropy - Batch
+size = 256 - Maximum epochs = 20 - EarlyStopping - ReduceLROnPlateau
+
+Callbacks: EarlyStopping: - monitor = val_loss - patience = 5 -
+restore_best_weights = True
+
+ReduceLROnPlateau: - monitor = val_loss - factor = 0.5 - patience = 2 -
+min_lr = 1e-6
+
+Role: LSTM is used as a recurrent baseline alongside GRU to determine
+whether the more complex LSTM memory mechanism provides an advantage for
+this feature representation.
+
+8. IMPROVED TRANSFORMER
+
+Purpose: The Transformer is the proposed attention-based architecture in
+the current experiment.
+
+The current Transformer is an improved version of the earlier
+Transformer setup. It uses a feature-tokenization strategy specifically
+designed for the 39 numerical features.
+
+Main design: - 64-dimensional feature embeddings - 4 attention heads - 2
+Transformer encoder blocks - Feature-specific learnable embeddings -
+Learnable positional embeddings - Learnable CLS token - Pre-normalized
+residual attention blocks - GELU feed-forward layers - Compact
+classification head - AdamW optimizer
+
+Input representation:
+
+Original: (39,)
+
+Reshaped to: (39, 1)
+
+Each of the 39 numerical features becomes one feature token.
+
+8.1 FEATURE TOKENIZER
+
+The FeatureTokenizer gives each numerical feature its own learnable
+embedding direction and bias.
+
+Configuration: - Number of features = 39 - Embedding dimension (d_model)
+= 64
+
+The scalar value of each feature is projected into a 64-dimensional
+representation.
+
+Conceptually:
+
+39 scalar features | Feature-specific learnable projection | 39 feature
+tokens × 64 dimensions
+
+8.2 POSITION EMBEDDING
+
+A learnable Embedding layer provides feature-position information.
+
+Configuration: - Input dimension = 39 - Output dimension = 64
+
+The position embedding is added to the feature-token representations.
+
+This allows the model to retain information about the identity/order of
+the feature positions before self-attention.
+
+8.3 LEARNABLE CLS TOKEN
+
+A dedicated learnable CLS token is added before the Transformer encoder
+blocks.
+
+Purpose: The CLS token acts as a global representation of the complete
+feature sequence and is later used for classification.
+
+After adding CLS:
+
+39 feature tokens + 1 CLS token = 40 tokens
+
+Token representation: 40 × 64
+
+8.4 TRANSFORMER ENCODER BLOCK
+
+Each TransformerEncoder block uses pre-normalization and residual
+connections.
+
+Configuration: - d_model = 64 - num_heads = 4 - feed-forward dimension =
+128 - dropout = 0.10
+
+Each block contains:
+
+Input | Layer Normalization | Multi-Head Self-Attention | Dropout |
+Residual Connection | Layer Normalization | Feed-Forward Network |
+Dropout | Residual Connection | Output
+
+Multi-Head Attention: - Number of heads = 4 - key dimension = 64 / 4 =
+16 per head - Attention dropout = 0.10
+
+8.5 FEED-FORWARD NETWORK INSIDE THE TRANSFORMER
+
+Each Transformer encoder block contains:
+
+Dense(128, GELU) | Dropout(0.10) | Dense(64) | Dropout(0.10)
+
+The 128-dimensional intermediate representation is projected back to the
+64-dimensional model space.
+
+8.6 NUMBER OF TRANSFORMER BLOCKS
+
+Number of encoder blocks: - 2
+
+Therefore the feature representation passes through two identical
+pre-normalized Transformer encoder stages.
+
+8.7 TRANSFORMER CLASSIFICATION HEAD
+
+After the two encoder blocks:
+
+Transformer output | Layer Normalization | Select CLS token | Dense(64,
+GELU) | Dropout(0.15) | Dense(8, Softmax) | 8-class output
+
+The CLS token representation is used as the final global representation
+for classification.
+
+8.8 TRANSFORMER OPTIMIZER
+
+Optimizer: - AdamW
+
+Learning rate: - 1e-4
+
+Weight decay: - 1e-4
+
+Loss: - Sparse categorical crossentropy
+
+Metrics: - Accuracy
+
+Training: - Batch size = 256 - Maximum epochs = 25
+
+EarlyStopping: - monitor = val_loss - patience = 5 -
+restore_best_weights = True
+
+ReduceLROnPlateau: - monitor = val_loss - factor = 0.5 - patience = 3 -
+min_lr = 1e-6
+
+9. ARCHITECTURE COMPARISON
+
+DNN: 39 -> 128 -> 64 -> 32 -> 8
+
+DNN + Dropout: 39 -> 128 -> Dropout(0.30) -> 64 -> Dropout(0.30) -> 32
+-> 8
+
+DNN + L2: 39 -> 128 [L2=0.001] -> 64 [L2=0.001] -> 32 -> 8
+
+Proposed DNN: 39 -> 128 [L2=0.001] -> BatchNorm -> Dropout(0.30) -> 64
+[L2=0.001] -> Dropout(0.30) -> 32 -> Dropout(0.20) -> 8
+
+GRU: 39 × 1 -> GRU(64, sequences) -> Dropout(0.20) -> GRU(32) ->
+Dense(64, ReLU) -> Dropout(0.20) -> 8
+
+LSTM: 39 × 1 -> LSTM(64, sequences) -> Dropout(0.30) -> LSTM(32) ->
+Dropout(0.30) -> Dense(64, ReLU) -> 8
+
+Transformer: 39 × 1 -> Feature Tokenizer(64) -> Learnable Position
+Embedding -> CLS Token -> Transformer Encoder × 2 -> LayerNorm -> CLS
+representation -> Dense(64, GELU) -> Dropout(0.15) -> 8
+
+10. ARCHITECTURAL PURPOSE OF EACH MODEL
+
+DNN: Provides the basic feed-forward baseline.
+
+DNN + Dropout: Tests stochastic regularization through randomly dropping
+hidden activations during training.
+
+DNN + L2: Tests weight regularization by penalizing large weights.
+
+Proposed DNN: Combines L2 regularization, Batch Normalization and
+multiple Dropout layers, with adaptive training callbacks.
+
+GRU: Tests whether recurrent processing of the ordered feature sequence
+can capture useful dependencies with fewer recurrent parameters than
+LSTM.
+
+LSTM: Tests a more expressive recurrent memory mechanism using gated
+memory cells.
+
+Transformer: Tests an attention-based architecture that allows
+interactions among feature tokens through self-attention and uses a
+learnable global CLS representation.
+
+11. CURRENT EXPERIMENTAL RESULT CONTEXT
+
+The architecture comparison produced the following recorded results:
+
+Model Accuracy Macro Precision Macro Recall Macro F1
+
+DNN 75.44% 64.03% 70.31% 63.46% DNN + Dropout 73.73% 63.91% 69.02%
+62.10% DNN + L2 75.08% 63.43% 68.96% 63.05% Proposed DNN 74.07% 64.51%
+68.98% 62.26% GRU 69.82% 60.34% 65.51% 58.68% LSTM 55.24% 52.20% 51.43%
+45.71% Transformer 72.53% 65.39% 71.05% 62.63%
+
+Training times:
+
+DNN 19.48 s DNN + Dropout 21.84 s DNN + L2 18.46 s Proposed DNN 25.70 s
+GRU 668.69 s LSTM 173.61 s Transformer 3497.91 s
+
+Interpretation: - DNN is the accuracy and macro-F1 leader. - DNN + L2 is
+the fastest model. - GRU outperforms LSTM among the two recurrent
+models. - Transformer has the highest macro precision and macro
+recall. - Transformer has the highest training cost. - These results
+describe this recorded experiment and should not be presented as a
+universal SOTA claim.
+
+12. FINAL ARCHITECTURE SUMMARY
+
+The current project intentionally compares three broad architecture
+families:
+
+A. Feed-forward dense architectures - DNN - DNN + Dropout - DNN + L2 -
+Proposed DNN
+
+B. Recurrent architectures - GRU - LSTM
+
+C. Attention-based architecture - Transformer
+
+All seven models solve the same eight-class intrusion-detection task
+using the same 39 standardized numerical features. The main difference
+is how each architecture processes and represents those features.
+
+The current architecture study therefore provides a controlled
+comparison of: - plain feature transformation, - regularization, -
+recurrent sequence processing, - and self-attention-based feature
+interaction.
+
+END OF DOCUMENT
